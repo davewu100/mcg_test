@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
 
     int f_stat   = open("/sys/fs/cgroup/a/cgroup.stat", O_RDONLY);
     int f_memst  = open("/sys/fs/cgroup/a/memory.stat", O_RDONLY);
-    int f_memcur = open("/sys/fs/cgroup/a/memory.current", O_RDONLY);
-    if (f_stat < 0 || f_memst < 0 || f_memcur < 0) {
+    int f_memnuma = open("/sys/fs/cgroup/a/memory.numa_stat", O_RDONLY);
+    if (f_stat < 0 || f_memst < 0 || f_memnuma < 0) {
         perror("open");
         return 1;
     }
@@ -38,9 +38,9 @@ int main(int argc, char *argv[])
         if (i == 0) {
             dump_fd("cgroup.stat", f_stat);
             dump_fd("memory.stat", f_memst);
-            dump_fd("memory.current", f_memcur);
+            dump_fd("memory.numa_stat", f_memnuma);
         } else {
-            // Read memory.stat in loop to test cache
+            // Read memory.stat and memory.numa_stat in loop to test cache
             char buf[8192];
             lseek(f_memst, 0, SEEK_SET);
             ssize_t m = read(f_memst, buf, sizeof(buf)-1);
@@ -49,13 +49,13 @@ int main(int argc, char *argv[])
                 // Print a compact line each loop
                 // printf("loop %d: memory.stat read %zu bytes\n", i, m);
             }
-            // Also read memory.current
-            lseek(f_memcur, 0, SEEK_SET);
-            m = read(f_memcur, buf, sizeof(buf)-1);
+            // Read memory.numa_stat
+            lseek(f_memnuma, 0, SEEK_SET);
+            m = read(f_memnuma, buf, sizeof(buf)-1);
             if (m > 0) {
                 buf[m] = '\0';
                 // Print a compact line each loop
-                // printf("loop %d: memory.current=%s", i, buf);
+                // printf("loop %d: memory.numa_stat read %zu bytes\n", i, m);
             }
         }
         // usleep(200 * 1000); // 200ms between iterations
@@ -63,6 +63,6 @@ int main(int argc, char *argv[])
 
     close(f_stat);
     close(f_memst);
-    close(f_memcur);
+    close(f_memnuma);
     return 0;
 }
