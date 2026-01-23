@@ -12,7 +12,7 @@ fi
 RESULT_DIR="$1"
 
 if [ ! -d "$RESULT_DIR" ]; then
-    echo "错误: 目录不存在: $RESULT_DIR"
+    echo "Error: Directory does not exist: $RESULT_DIR"
     exit 1
 fi
 

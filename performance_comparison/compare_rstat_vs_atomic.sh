@@ -13,12 +13,12 @@ mkdir -p "$OUTPUT_DIR"
 
 echo "=== RSTAT vs Atomic Counter 性能对比 ==="
 echo "测试参数: $TEST_PARAM"
-echo "迭代次数: $ITERATIONS"
+echo "Test iterations: $ITERATIONS"
 echo "结果目录: $OUTPUT_DIR"
 echo ""
 
 # 检查工具
-command -v perf >/dev/null 2>&1 || { echo "错误: 需要安装 perf"; exit 1; }
+command -v perf >/dev/null 2>&1 || { echo "Error: perf is required"; exit 1; }
 
 # 检查当前内核配置
 echo "检查内核配置..."
@@ -39,9 +39,9 @@ echo "当前测试的是: $CURRENT_MODE 模式"
 echo ""
 
 # 收集性能数据
-echo "收集性能数据 ($ITERATIONS 次迭代)..."
+echo "Collecting performance data ($ITERATIONS iterations)..."
 for i in $(seq 1 $ITERATIONS); do
-    echo "  迭代 $i/$ITERATIONS..."
+    echo "  Iteration $i/$ITERATIONS..."
     
     # CPU 周期和指令
     sudo perf stat -r 1 -e cycles,instructions \
@@ -86,7 +86,7 @@ echo "分析结果..."
     echo "=== 性能对比报告 ==="
     echo "模式: $CURRENT_MODE"
     echo "测试参数: $TEST_PARAM"
-    echo "迭代次数: $ITERATIONS"
+    echo "Test iterations: $ITERATIONS"
     echo ""
     cat "$OUTPUT_DIR/summary.txt"
     echo ""
@@ -104,15 +104,15 @@ echo "分析结果..."
 
 echo ""
 echo "=== 对比完成 ==="
-echo "结果保存在: $OUTPUT_DIR"
+echo "Results saved in: $OUTPUT_DIR"
 echo ""
-echo "查看摘要:"
+echo "View summary:"
 echo "  cat $OUTPUT_DIR/summary.txt"
 echo ""
-echo "查看完整报告:"
+echo "View full report:"
 echo "  cat $OUTPUT_DIR/full_report.txt"
 echo ""
-echo "提示: 要完整对比，需要:"
+echo "Tip: For complete comparison:"
 echo "  1. 编译 RSTAT 版本内核，运行此脚本，保存结果"
 echo "  2. 编译 Atomic Counter 版本内核，运行此脚本，保存结果"
 echo "  3. 对比两个结果目录的 summary.txt"

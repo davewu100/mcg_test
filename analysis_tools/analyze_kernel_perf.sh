@@ -16,7 +16,7 @@ echo "结果目录: $OUTPUT_DIR"
 echo ""
 
 # 检查工具
-command -v perf >/dev/null 2>&1 || { echo "错误: 需要安装 perf"; exit 1; }
+command -v perf >/dev/null 2>&1 || { echo "Error: perf is required"; exit 1; }
 
 # 1. 基础性能统计
 echo "[1/6] 收集基础性能统计..."
@@ -77,7 +77,7 @@ echo "[6/6] 分析特定函数..."
 
 echo ""
 echo "=== 分析完成 ==="
-echo "结果保存在: $OUTPUT_DIR"
+echo "Results saved in: $OUTPUT_DIR"
 echo ""
 echo "主要文件:"
 echo "  - perf_stat.txt: 基础性能统计"

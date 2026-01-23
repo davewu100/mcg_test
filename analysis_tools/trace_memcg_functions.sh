@@ -26,7 +26,7 @@ if [ ! -d "$TRACE_DIR" ]; then
 fi
 
 if [ ! -d "$TRACE_DIR" ]; then
-    echo "错误: 无法访问 $TRACE_DIR"
+    echo "Error: Cannot access $TRACE_DIR"
     echo "请确保内核启用了 CONFIG_DEBUG_FS"
     exit 1
 fi
@@ -61,7 +61,7 @@ elif [ "$TRACE_TYPE" = "rstat" ]; then
     )
     OUTPUT_FILE="$OUTPUT_DIR/ftrace_rstat.txt"
 else
-    echo "错误: 跟踪类型必须是 'atomic' 或 'rstat'"
+    echo "Error: Trace type must be 'atomic' or 'rstat'"
     exit 1
 fi
 
@@ -104,7 +104,7 @@ echo "分析跟踪结果..."
     echo "=== 函数调用统计 ==="
     for func in "${FUNCTIONS[@]}"; do
         count=$(grep -c "$func" "$OUTPUT_FILE" 2>/dev/null || echo "0")
-        echo "$func: $count 次调用"
+        echo "$func: $count calls"
     done
     echo ""
     echo "=== 函数执行时间统计 (前20) ==="
@@ -121,7 +121,7 @@ echo > "$TRACE_DIR/set_ftrace_filter" 2>/dev/null || \
 
 echo ""
 echo "=== 跟踪完成 ==="
-echo "结果保存在: $OUTPUT_DIR"
+echo "Results saved in: $OUTPUT_DIR"
 echo ""
 echo "查看跟踪结果:"
 echo "  less $OUTPUT_FILE"
@@ -129,6 +129,6 @@ echo ""
 echo "查看分析:"
 echo "  cat $OUTPUT_DIR/analysis.txt"
 echo ""
-echo "提示: 跟踪文件可能很大，使用 less 或 head 查看"
+echo "Tip: Trace files can be large, use less or head to view"
 
 

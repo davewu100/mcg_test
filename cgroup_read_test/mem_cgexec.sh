@@ -6,7 +6,8 @@ cgroup_top_dir="/sys/fs/cgroup/a"
 
 # Args: [num_leaves] [size_per_worker] [seconds]
 NUM="${1:-26}"
-SIZE="${2:-200M}"
+# SIZE="${2:-200M}"
+SIZE="${2:-2M}"
 SECS="${3:-200}"
 
 ALLOC="${ALLOC_BIN:-./alloc}"
