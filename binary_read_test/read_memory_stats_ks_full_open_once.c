@@ -1,7 +1,8 @@
 /*
  * Full-field read of memory.stat.ks and memory.numa_stat.ks via BTF + cache.
- * Sets 16-field filter (vmstats.state[0]..vmstats.state[15]) then open-once
- * + 1M lseek+read on each file. Compile and run:
+ * Sets 128-field + flush filter (vmstats.state[0]..[127]) then open-once
+ * + 1M lseek+read on each file. "flush" in schema = full flush like legacy (fair comparison).
+ * Compile and run:
  *   gcc -O2 -o read_memory_stats_ks_full_open_once read_memory_stats_ks_full_open_once.c
  *   sudo ./read_memory_stats_ks_full_open_once
  */
@@ -15,17 +16,19 @@
 #define N         1000000
 #define CGPATH    "/sys/fs/cgroup"
 #define BUF_SIZE  4096
-#define KS_MAX_FIELDS 16
+#define KS_MAX_FIELDS 128
+#define FULL_FILTER_BUF_SIZE 4096
 
 static const char *full_filter(void)
 {
-	static char buf[1024];
+	static char buf[FULL_FILTER_BUF_SIZE];
 	size_t n = 0;
 	int i;
 
+	n += (size_t)snprintf(buf + n, sizeof(buf) - n, "flush");
 	for (i = 0; i < KS_MAX_FIELDS; i++) {
 		n += (size_t)snprintf(buf + n, sizeof(buf) - n,
-			"%svmstats.state[%d]", i ? "," : "", i);
+			",vmstats.state[%d]", i);
 		if (n >= sizeof(buf)) break;
 	}
 	return buf;
@@ -44,7 +47,7 @@ int main(void)
 	snprintf(path_stat, sizeof(path_stat), "%s/memory.stat.ks", CGPATH);
 	snprintf(path_numa, sizeof(path_numa), "%s/memory.numa_stat.ks", CGPATH);
 
-	/* Set 16-field filter on both .ks files (requires write = root) */
+	/* Set 128-field + flush filter on both .ks files (requires write = root) */
 	fp = fopen(path_stat, "w");
 	if (fp) {
 		fprintf(fp, "%s", filter);

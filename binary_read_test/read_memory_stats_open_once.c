@@ -13,19 +13,22 @@
 #include <string.h>
 
 #define N        1000000
-#define CGPATH   "/sys/fs/cgroup"
 #define BUF_SIZE 4096
+#define DEFAULT_CGPATH "/sys/fs/cgroup"
 
 int main(void)
 {
+	const char *cgpath = getenv("CGPATH");
+	if (!cgpath)
+		cgpath = DEFAULT_CGPATH;
 	char path_stat[256], path_numa[256];
 	char buf[BUF_SIZE];
 	int fd_stat, fd_numa;
 	int i;
 	ssize_t n;
 
-	snprintf(path_stat, sizeof(path_stat), "%s/memory.stat", CGPATH);
-	snprintf(path_numa, sizeof(path_numa), "%s/memory.numa_stat", CGPATH);
+	snprintf(path_stat, sizeof(path_stat), "%s/memory.stat", cgpath);
+	snprintf(path_numa, sizeof(path_numa), "%s/memory.numa_stat", cgpath);
 
 	fd_stat = open(path_stat, O_RDONLY);
 	if (fd_stat < 0) {
