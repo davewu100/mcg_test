@@ -1,5 +1,39 @@
 # Why two benchmarks differ, and which is more accurate
 
+## Test commands (comparison benchmarks)
+
+From `~/develop/kernel/cgroup/mcg_test/binary_read_test`:
+
+```bash
+# Build
+make
+
+# Root cgroup (needs sudo to write filter)
+sudo make bench        # legacy full vs ks 3-field + flush (1M reads each)
+sudo make bench-16     # legacy full vs ks 16-field + flush
+sudo make bench-32     # legacy full vs ks 32-field + flush
+sudo make bench-64     # legacy full vs ks 64-field + flush
+sudo make bench-full   # legacy full vs ks 128-field + flush
+
+# Without sudo: use a cgroup you own
+sudo mkdir -p /sys/fs/cgroup/bench && sudo chown $USER /sys/fs/cgroup/bench
+make bench CGPATH=/sys/fs/cgroup/bench
+make bench-16 CGPATH=/sys/fs/cgroup/bench
+# ... same for bench-32, bench-64, bench-full
+
+# Set filter only (no benchmark run)
+make set-filter        # 3-field + flush
+make set-filter-16     # 16-field + flush
+make set-filter-32     # 32-field + flush
+make set-filter-64     # 64-field + flush
+make set-full-filter   # 128-field + flush
+# Root cgroup: sudo make set-filter (or sudo make set-filter-16, etc.)
+```
+
+Each `make bench*` runs: (1) legacy full 1M reads (memory.stat + memory.numa_stat), (2) set N-field + flush on .ks files, (3) ks 1M reads (memory.stat.ks + memory.numa_stat.ks). Compare the `real` time of the two `time` outputs.
+
+---
+
 ## 1. Why does Make need sudo?
 
 **Before:** The Makefile used `sudo tee` to write the filter to `/sys/fs/cgroup/memory.stat.ks`. The root cgroup is usually writable only by root, so `set-filter` needed sudo.
